@@ -14,9 +14,10 @@ const DIFF_DARK = { easy: '#34D399', medium: '#FCD34D', hard: '#F87171', expert:
 
 export default function GameScreen({ navigation }) {
   const { theme, isDark } = useTheme();
-  const { difficulty, completed, timer, startNewGame, errors } = useGame();
+  const { difficulty, completed, timer, startNewGame, errors, gridSize = 9 } = useGame();
 
   const diffColor = isDark ? DIFF_DARK[difficulty] : DIFF_COLORS[difficulty];
+  const sizeColor = theme[`size${gridSize}`] || theme.primary;
   const errorCount = Object.keys(errors).length;
 
   const handleNewGame = () => {
@@ -40,6 +41,9 @@ export default function GameScreen({ navigation }) {
         </TouchableOpacity>
         <View style={[styles.diffBadge, { backgroundColor: diffColor + '22', borderColor: diffColor }]}>
           <Text style={[styles.diffText, { color: diffColor }]}>{difficulty.toUpperCase()}</Text>
+        </View>
+        <View style={[styles.diffBadge, { backgroundColor: sizeColor + '22', borderColor: sizeColor }]}>
+          <Text style={[styles.diffText, { color: sizeColor }]}>{gridSize}×{gridSize}</Text>
         </View>
         <TouchableOpacity onPress={handleNewGame}>
           <Text style={[styles.newGame, { color: theme.secondary }]}>New ＋</Text>

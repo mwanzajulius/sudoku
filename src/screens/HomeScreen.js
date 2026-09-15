@@ -15,10 +15,17 @@ const DIFFICULTIES = [
   { key: 'expert', label: '🔥 Expert', desc: '22 clues' },
 ];
 
+const GRID_SIZES = [
+  { size: 4, label: '4×4', desc: 'Mini' },
+  { size: 6, label: '6×6', desc: 'Junior' },
+  { size: 9, label: '9×9', desc: 'Classic' },
+];
+
 export default function HomeScreen({ navigation }) {
   const { theme, isDark, toggleTheme } = useTheme();
   const { startNewGame, loadSavedGame } = useGame();
   const [hasSave, setHasSave] = useState(false);
+  const [selectedSize, setSelectedSize] = useState(9);
 
   useEffect(() => {
     checkSave();
@@ -30,7 +37,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleStart = (diff) => {
-    startNewGame(diff);
+    startNewGame(diff, selectedSize);
     navigation.navigate('Game');
   };
 
@@ -68,6 +75,31 @@ export default function HomeScreen({ navigation }) {
           <Text style={[styles.resumeText, { color: theme.accent }]}>▶️  Resume Last Game</Text>
         </TouchableOpacity>
       )}
+
+      {/* Grid size selector */}
+      <Text style={[styles.sectionTitle, { color: theme.text }]}>Grid Size</Text>
+      <View style={styles.sizeRow}>
+        {GRID_SIZES.map(g => {
+          const sizeColor = theme[`size${g.size}`];
+          const active = selectedSize === g.size;
+          return (
+            <TouchableOpacity
+              key={g.size}
+              style={[
+                styles.sizeBtn,
+                {
+                  backgroundColor: active ? sizeColor : theme.cardBg,
+                  borderColor: sizeColor,
+                },
+              ]}
+              onPress={() => setSelectedSize(g.size)}
+            >
+              <Text style={[styles.sizeBtnLabel, { color: active ? '#fff' : sizeColor }]}>{g.label}</Text>
+              <Text style={[styles.sizeBtnDesc, { color: active ? '#ffffffaa' : theme.subtext }]}>{g.desc}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
       {/* Difficulty cards */}
       <Text style={[styles.sectionTitle, { color: theme.text }]}>Start New Game</Text>
@@ -121,6 +153,20 @@ const styles = StyleSheet.create({
   },
   resumeText: { fontSize: 16, fontWeight: '600' },
   sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
+  sizeRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 20,
+  },
+  sizeBtn: {
+    flex: 1,
+    borderWidth: 2,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  sizeBtnLabel: { fontSize: 16, fontWeight: '700' },
+  sizeBtnDesc: { fontSize: 11, marginTop: 2 },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

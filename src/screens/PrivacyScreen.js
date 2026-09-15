@@ -54,7 +54,7 @@ This data never leaves your device and is not accessible to us or any third part
     title: '9. Contact Us',
     body: `If you have any questions or concerns about this Privacy Policy, please contact us at:
 
-📧 support@sudokukids.app
+📧 mwangistacy69@gmail.com
 
 We will respond to all inquiries within 7 business days.`,
   },
@@ -81,7 +81,7 @@ export default function PrivacyScreen({ navigation }) {
           </Text>
         </View>
 
-        <Text style={[styles.updated, { color: theme.subtext }]}>Last updated: January 2025</Text>
+        <Text style={[styles.updated, { color: theme.subtext }]}>Last updated: September 14, 2026</Text>
 
         {SECTIONS.map((s, i) => (
           <View key={i} style={styles.section}>

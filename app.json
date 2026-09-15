@@ -5,10 +5,10 @@
     "owner": "jujuu09",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/puzzle.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/puzzle.png",
       "resizeMode": "contain",
       "backgroundColor": "#6C63FF"
     },
@@ -18,9 +18,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "foregroundImage": "./assets/puzzle.png",
+        "backgroundImage": "./assets/puzzle.png",
+        "monochromeImage": "./assets/puzzle.png",
         "backgroundColor": "#6C63FF"
       },
       "package": "com.sudokukids.app",
@@ -28,7 +28,7 @@
       "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/puzzle.png"
     },
     "extra": {
       "eas": {

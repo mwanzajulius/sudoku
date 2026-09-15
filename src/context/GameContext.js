@@ -7,6 +7,7 @@ const GameContext = createContext();
 
 export function GameProvider({ children }) {
   const [difficulty, setDifficulty] = useState('medium');
+  const [gridSize, setGridSize] = useState(9);
   const [puzzle, setPuzzle] = useState(null);
   const [solution, setSolution] = useState(null);
   const [board, setBoard] = useState(null);
@@ -42,15 +43,16 @@ export function GameProvider({ children }) {
 
   const saveGame = useCallback(async () => {
     if (!board) return;
-    const state = { difficulty, puzzle, solution, board, given, errors, history, future, hintsLeft, timer, notes: serializeNotes(notes) };
+    const state = { difficulty, gridSize, puzzle, solution, board, given, errors, history, future, hintsLeft, timer, notes: serializeNotes(notes) };
     await AsyncStorage.setItem(SAVE_KEY, JSON.stringify(state));
-  }, [board, difficulty, puzzle, solution, given, errors, history, future, hintsLeft, timer, notes]);
+  }, [board, difficulty, gridSize, puzzle, solution, given, errors, history, future, hintsLeft, timer, notes]);
 
   const loadSavedGame = useCallback(async () => {
     const raw = await AsyncStorage.getItem(SAVE_KEY);
     if (!raw) return false;
     const state = JSON.parse(raw);
     setDifficulty(state.difficulty);
+    setGridSize(state.gridSize || 9);
     setPuzzle(state.puzzle);
     setSolution(state.solution);
     setBoard(state.board);
@@ -66,8 +68,9 @@ export function GameProvider({ children }) {
     return true;
   }, []);
 
-  const startNewGame = useCallback((diff = difficulty) => {
-    const { puzzle: p, solution: s } = generatePuzzle(diff);
+  const startNewGame = useCallback((diff = difficulty, size = gridSize) => {
+    const { puzzle: p, solution: s } = generatePuzzle(diff, size);
+    setGridSize(size);
     const givenMap = {};
     p.forEach((row, r) => row.forEach((val, c) => { if (val !== 0) givenMap[`${r},${c}`] = true; }));
     setDifficulty(diff);
@@ -86,7 +89,7 @@ export function GameProvider({ children }) {
     setCompleted(false);
     setRunning(true);
     AsyncStorage.removeItem(SAVE_KEY);
-  }, [difficulty]);
+  }, [difficulty, gridSize]);
 
   const inputNumber = useCallback((num) => {
     if (!selected || !board || completed) return;
@@ -186,7 +189,7 @@ export function GameProvider({ children }) {
 
   return (
     <GameContext.Provider value={{
-      difficulty, puzzle, solution, board, given, errors, selected, setSelected,
+      difficulty, gridSize, puzzle, solution, board, given, errors, selected, setSelected,
       history, future, hintsLeft, timer, running, completed, notes, noteMode,
       setNoteMode, startNewGame, inputNumber, undo, redo, useHint, eraseCell,
       loadSavedGame, saveGame,

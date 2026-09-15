@@ -5,11 +5,16 @@ import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const BOARD_SIZE = Math.min(width - 24, 380);
-const CELL_SIZE = BOARD_SIZE / 9;
+
+const BOX_DIMS = { 4: [2, 2], 6: [2, 3], 9: [3, 3] };
 
 export default function SudokuBoard() {
-  const { board, given, errors, selected, setSelected, notes, solution } = useGame();
+  const { board, given, errors, selected, setSelected, notes, gridSize = 9 } = useGame();
   const { theme } = useTheme();
+
+  const size = gridSize || 9;
+  const CELL_SIZE = BOARD_SIZE / size;
+  const [boxR, boxC] = BOX_DIMS[size] || [3, 3];
 
   const selectedNum = useMemo(() => {
     if (!selected || !board) return null;
@@ -19,7 +24,7 @@ export default function SudokuBoard() {
   if (!board) return null;
 
   return (
-    <View style={[styles.board, { borderColor: theme.boxLine, backgroundColor: theme.surface }]}>
+    <View style={[styles.board, { borderColor: theme.boxLine, backgroundColor: theme.surface, width: BOARD_SIZE, height: BOARD_SIZE }]}>
       {board.map((row, r) =>
         row.map((val, c) => {
           const key = `${r},${c}`;
@@ -28,8 +33,8 @@ export default function SudokuBoard() {
           const isError = errors?.[key];
           const sameNum = selectedNum && val === selectedNum && val !== 0;
           const sameBox = selected && (
-            Math.floor(selected.row / 3) === Math.floor(r / 3) &&
-            Math.floor(selected.col / 3) === Math.floor(c / 3)
+            Math.floor(selected.row / boxR) === Math.floor(r / boxR) &&
+            Math.floor(selected.col / boxC) === Math.floor(c / boxC)
           );
           const sameRowCol = selected && (selected.row === r || selected.col === c);
           const cellNotes = notes?.[key];
@@ -39,8 +44,8 @@ export default function SudokuBoard() {
           else if (sameNum) bgColor = theme.sameNumber;
           else if (sameBox || sameRowCol) bgColor = theme.highlight;
 
-          const borderRight = (c + 1) % 3 === 0 && c !== 8;
-          const borderBottom = (r + 1) % 3 === 0 && r !== 8;
+          const borderRight = (c + 1) % boxC === 0 && c !== size - 1;
+          const borderBottom = (r + 1) % boxR === 0 && r !== size - 1;
 
           return (
             <TouchableOpacity
@@ -56,8 +61,6 @@ export default function SudokuBoard() {
                   borderBottomWidth: borderBottom ? 2 : 0.5,
                   borderRightColor: borderRight ? theme.boxLine : theme.gridLine,
                   borderBottomColor: borderBottom ? theme.boxLine : theme.gridLine,
-                  borderTopWidth: r === 0 ? 0 : 0,
-                  borderLeftWidth: c === 0 ? 0 : 0,
                 },
               ]}
             >
@@ -73,7 +76,7 @@ export default function SudokuBoard() {
                   {val}
                 </Text>
               ) : cellNotes && cellNotes.size > 0 ? (
-                <NoteGrid notes={cellNotes} theme={theme} cellSize={CELL_SIZE} />
+                <NoteGrid notes={cellNotes} theme={theme} cellSize={CELL_SIZE} gridSize={size} />
               ) : null}
             </TouchableOpacity>
           );
@@ -83,11 +86,13 @@ export default function SudokuBoard() {
   );
 }
 
-function NoteGrid({ notes, theme, cellSize }) {
+function NoteGrid({ notes, theme, cellSize, gridSize }) {
+  const cols = gridSize === 4 ? 2 : gridSize === 6 ? 3 : 3;
+  const pct = `${100 / cols}%`;
   return (
     <View style={styles.noteGrid}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
-        <Text key={n} style={[styles.noteText, { color: notes.has(n) ? theme.user : 'transparent', fontSize: cellSize * 0.22 }]}>
+      {Array.from({ length: gridSize }, (_, i) => i + 1).map(n => (
+        <Text key={n} style={[styles.noteText, { color: notes.has(n) ? theme.user : 'transparent', fontSize: cellSize * 0.22, width: pct }]}>
           {n}
         </Text>
       ))}
@@ -103,8 +108,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     alignSelf: 'center',
-    width: BOARD_SIZE,
-    height: BOARD_SIZE,
   },
   cell: {
     alignItems: 'center',

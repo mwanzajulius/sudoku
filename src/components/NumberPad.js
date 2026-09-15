@@ -5,17 +5,20 @@ import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const PAD_SIZE = Math.min(width - 24, 380);
-const BTN_SIZE = (PAD_SIZE - 8) / 9;
 
 export default function NumberPad() {
-  const { inputNumber, undo, redo, useHint, eraseCell, hintsLeft, history, future, noteMode, setNoteMode } = useGame();
+  const { inputNumber, undo, redo, useHint, eraseCell, hintsLeft, history, future, noteMode, setNoteMode, gridSize = 9 } = useGame();
   const { theme } = useTheme();
+
+  const size = gridSize || 9;
+  const numbers = Array.from({ length: size }, (_, i) => i + 1);
+  const BTN_SIZE = (PAD_SIZE - 8) / size;
 
   return (
     <View style={styles.container}>
       {/* Number buttons */}
       <View style={styles.numRow}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+        {numbers.map(n => (
           <TouchableOpacity
             key={n}
             onPress={() => inputNumber(n)}
