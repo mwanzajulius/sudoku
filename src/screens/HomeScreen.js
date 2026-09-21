@@ -16,8 +16,7 @@ const DIFFICULTIES = [
 ];
 
 const GRID_SIZES = [
-  { size: 4, label: '4×4', desc: 'Mini' },
-  { size: 6, label: '6×6', desc: 'Junior' },
+  { size: 3, label: '3×3', desc: 'Mini' },
   { size: 9, label: '9×9', desc: 'Classic' },
 ];
 
@@ -32,8 +31,9 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   const checkSave = async () => {
-    const result = await loadSavedGame();
-    setHasSave(result);
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+    const raw = await AsyncStorage.getItem('sudoku_saved_game');
+    setHasSave(!!raw);
   };
 
   const handleStart = (diff) => {
@@ -41,7 +41,8 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('Game');
   };
 
-  const handleResume = () => {
+  const handleResume = async () => {
+    await loadSavedGame();
     navigation.navigate('Game');
   };
 

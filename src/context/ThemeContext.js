@@ -32,8 +32,7 @@ export const colors = {
     diffExpert: '#7C3AED',
     cardBg: '#F9F9F9',
     shadow: '#000000',
-    size4: '#0284C7',
-    size6: '#059669',
+    size3: '#0284C7',
     size9: '#111111',
   },
   dark: {
@@ -64,8 +63,7 @@ export const colors = {
     diffExpert: '#C084FC',
     cardBg: '#1C1C1C',
     shadow: '#000000',
-    size4: '#38BDF8',
-    size6: '#34D399',
+    size3: '#38BDF8',
     size9: '#EEEEEE',
   },
 };

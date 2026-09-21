@@ -1,20 +1,24 @@
 // Sudoku Engine: generate, validate, solve
-// Supports 4x4 (2x2 boxes), 6x6 (2x3 boxes), 9x9 (3x3 boxes)
-
-// boxRows x boxCols per grid size
-const BOX_DIMS = { 4: [2, 2], 6: [2, 3], 9: [3, 3] };
+// 3x3: 9 cells, numbers 1-3, no repeats in rows/cols
+// 9x9: 81 cells, numbers 1-9, no repeats in rows/cols/3x3 boxes
 
 function isValid(board, row, col, num, size) {
-  const [boxR, boxC] = BOX_DIMS[size];
+  // Check row
   for (let i = 0; i < size; i++) {
     if (board[row][i] === num) return false;
+  }
+  // Check column
+  for (let i = 0; i < size; i++) {
     if (board[i][col] === num) return false;
   }
-  const startRow = boxR * Math.floor(row / boxR);
-  const startCol = boxC * Math.floor(col / boxC);
-  for (let r = startRow; r < startRow + boxR; r++)
-    for (let c = startCol; c < startCol + boxC; c++)
-      if (board[r][c] === num) return false;
+  // Check box (only for 9x9)
+  if (size === 9) {
+    const startRow = 3 * Math.floor(row / 3);
+    const startCol = 3 * Math.floor(col / 3);
+    for (let r = startRow; r < startRow + 3; r++)
+      for (let c = startCol; c < startCol + 3; c++)
+        if (board[r][c] === num) return false;
+  }
   return true;
 }
 
@@ -49,11 +53,9 @@ function deepCopy(board) {
   return board.map(row => [...row]);
 }
 
-// clues per difficulty per grid size
 const CLUES = {
-  4:  { easy: 12, medium: 10, hard: 8,  expert: 6  },
-  6:  { easy: 24, medium: 20, hard: 16, expert: 12 },
-  9:  { easy: 46, medium: 36, hard: 28, expert: 22 },
+  3: { easy: 7, medium: 6, hard: 5, expert: 4 },
+  9: { easy: 46, medium: 36, hard: 28, expert: 22 },
 };
 
 export function generatePuzzle(difficulty = 'medium', gridSize = 9) {
@@ -61,8 +63,8 @@ export function generatePuzzle(difficulty = 'medium', gridSize = 9) {
   solve(solved, gridSize);
 
   const puzzle = deepCopy(solved);
-  const clues = (CLUES[gridSize] || CLUES[9])[difficulty] || 36;
   const total = gridSize * gridSize;
+  const clues = Math.min((CLUES[gridSize] || CLUES[9])[difficulty] || 36, total - 1);
   const toRemove = total - clues;
   const positions = shuffle([...Array(total).keys()]);
 
